@@ -26,19 +26,32 @@ async function run() {
         // await client.connect();
 
         const serviceCollection = client.db('carRepair').collection('services');
+        const bookingCollection = client.db('carRepair').collection('bookings');
+
+        // service all data 
         app.get('/services', async (req, res) => {
             const cursor = serviceCollection.find();
             const result = await cursor.toArray();
             res.send(result);
         })
 
+        // service specific single data
         app.get('/services/:id', async (req, res) => {
             const id = req.params.id;
             const qurey = { _id: new ObjectId(id) }
             const options = {
-                projection: { title: 1, price: 1, service_id: 1}
+                projection: { title: 1, price: 1, service_id: 1, img: 1}
             }
             const result = await serviceCollection.findOne(qurey, options);
+            res.send(result);
+        })
+
+
+        // bookings
+        app.post('/bookings', async(req, res) =>{
+            const booking = req.body;
+            console.log(booking);
+            const result = await bookingCollection.insertOne(booking);
             res.send(result);
         })
 
