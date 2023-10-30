@@ -47,13 +47,27 @@ async function run() {
         })
 
 
-        // bookings
+        // get some booking data
+        app.get('/bookings', async(req, res) =>{
+            console.log(req.query.email);
+            let query = {};
+            if(req.query?.email){
+                query = {email: req.query.email}
+            }
+            console.log(query)
+            const result = await bookingCollection.find(query).toArray();
+            res.send(result);
+        })
+
+
+        // bookings data post mongodb
         app.post('/bookings', async(req, res) =>{
             const booking = req.body;
             console.log(booking);
             const result = await bookingCollection.insertOne(booking);
             res.send(result);
         })
+
 
 
 
