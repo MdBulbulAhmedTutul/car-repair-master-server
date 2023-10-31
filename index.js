@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const jwt = require('jsonwebtoken');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config();
 const app = express();
@@ -35,7 +36,19 @@ async function run() {
             res.send(result);
         })
 
-        // service specific single data
+        // auth related api
+        app.post('/jwt', async(req, res) =>{
+            const user = req.body;
+            console.log(user);
+            const token = jwt.sign(user, 'secret', {expiresIn: '1h'})
+            res.send(token)
+        })
+
+
+
+
+        // services related api
+        //1 service specific single data
         app.get('/services/:id', async (req, res) => {
             const id = req.params.id;
             const qurey = { _id: new ObjectId(id) }
@@ -47,7 +60,7 @@ async function run() {
         })
 
 
-        // get some booking data
+        //2 get some booking data
         app.get('/bookings', async (req, res) => {
             console.log(req.query.email);
             let query = {};
@@ -60,7 +73,7 @@ async function run() {
         })
 
 
-        // bookings data post mongodb
+        //3 bookings data post mongodb
         app.post('/bookings', async (req, res) => {
             const booking = req.body;
             console.log(booking);
@@ -68,7 +81,7 @@ async function run() {
             res.send(result);
         })
 
-        // delete booking data
+        //4 delete booking data
         app.delete('/bookings/:id', async (req, res) => {
             const id = req.params.id;
             const qurey = { _id: new ObjectId(id) };
@@ -76,7 +89,7 @@ async function run() {
             res.send(result)
         })
 
-        // update booking data
+        //5 update booking data
         app.patch('/bookings/:id', async(req, res) =>{
             const id = req.params.id;
             const filter = {_id: new ObjectId(id)};
@@ -90,11 +103,6 @@ async function run() {
             const result = await bookingCollection.updateOne(filter, updateDoc);
             res.send(result)
         })
-
-
-
-
-
 
         // Send a ping to confirm a successful connection
         await client.db("admin").command({ ping: 1 });
